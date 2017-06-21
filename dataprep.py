@@ -50,13 +50,13 @@ def one_hot_encode_str_lbl(lbl, target, one_hot_targets):
         idx = target.index(lbl)
         return one_hot_targets[idx]
 
-def save_caption_vectors_flowers(data_dir, part='text_c10', dt_range=(1, 103)) :
+def save_caption_vectors_flowers(data_dir, dt_range=(1, 103)) :
     import time
 
     img_dir = join(data_dir, 'flowers/jpg')
     all_caps_dir = join(data_dir, 'flowers/all_captions.txt')
-    target_file_path = os.path.join(data_dir, "flowers/allclasses_"+ part +".txt")
-    caption_dir = join(data_dir, 'flowers/' + part)
+    target_file_path = os.path.join(data_dir, "flowers/allclasses_.txt")
+    caption_dir = join(data_dir, 'flowers/text_c10')
     image_files = [f for f in os.listdir(img_dir) if 'jpg' in f]
     print(image_files[300 :400])
     image_captions = {}
