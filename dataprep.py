@@ -1,15 +1,13 @@
-import json
 import os
-from os.path import join, isfile
-import re
-import numpy as np
-import pickle
 import argparse
 import skipthoughts
-import h5py
 import traceback
 import pickle
 import random
+
+import numpy as np
+
+from os.path import join
 
 def get_one_hot_targets(target_file_path):
 	target = []
@@ -56,24 +54,16 @@ def save_caption_vectors_flowers(data_dir, part='text_c10', dt_range=(1, 103)) :
     import time
 
     img_dir = join(data_dir, 'flowers/jpg')
-    #dataset_root_dir = join(data_dir, 'flowers')
     all_caps_dir = join(data_dir, 'flowers/all_captions.txt')
-    #vocab_path = os.path.join(data_dir, "flowers/vocab%d.txt" % vocab_size)
     target_file_path = os.path.join(data_dir, "flowers/allclasses_"+ part +".txt")
     caption_dir = join(data_dir, 'flowers/' + part)
     image_files = [f for f in os.listdir(img_dir) if 'jpg' in f]
     print(image_files[300 :400])
-    #print len(image_files)
-    #image_captions = {img_file : [] for img_file in image_files}
-    #image_classes = {img_file : None for img_file in image_files}
     image_captions = {}
     image_classes = {}
     class_dirs = []
     class_names = []
     img_ids = []
-
-    #if recreate_vocab and os.path.exists(all_caps_dir):
-    #    os.remove(all_caps_dir)
 
     target, one_hot_targets, n_target = get_one_hot_targets(target_file_path)
 
@@ -98,9 +88,6 @@ def save_caption_vectors_flowers(data_dir, part='text_c10', dt_range=(1, 103)) :
             with open(join(class_dir, cap_file)) as f :
                 str_captions = f.read()
                 captions = str_captions.split('\n')
-                #if recreate_vocab :
-                #    with open(all_caps_dir, "a") as myfile :
-                #        myfile.write(str_captions)
             img_file = cap_file[0 :11] + ".jpg"
 
             # 5 captions per image
@@ -108,8 +95,6 @@ def save_caption_vectors_flowers(data_dir, part='text_c10', dt_range=(1, 103)) :
             image_classes[img_file] = one_hot_encode_str_lbl(class_name,
                                                              target,
                                                              one_hot_targets)
-
-
 
     model = skipthoughts.load_model()
     encoded_captions = {}
@@ -145,10 +130,15 @@ def main() :
     parser = argparse.ArgumentParser()
     parser.add_argument('--data_dir', type = str, default = 'Data',
                         help = 'Data directory')
+    parser.add_argument('--dataset', type=str, default='flowers',
+                        help='Dataset to use. For Eg., "flowers"')
     args = parser.parse_args()
 
     dataset_dir = join(args.data_dir, "datasets")
-    save_caption_vectors_flowers(dataset_dir, part='set_4', dt_range=(1, 103))
+    if args.dataset == 'flowers':
+        save_caption_vectors_flowers(dataset_dir)
+    else:
+        print('Preprocessor for this dataset is not available.')
 
 
 if __name__ == '__main__' :

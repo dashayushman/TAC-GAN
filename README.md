@@ -54,7 +54,7 @@ The model presented in the paper was trained on the
 To train the TAC-GAN on the flowers dataset, first, download the dataset by
 doing the following,
 
-1. Download the flower images from
+1. **Download the flower images** from
 [here](http://www.robots.ox.ac.uk/~vgg/data/flowers/102/102flowers.tgz).
 Extract the ```102flowers.tgz``` file and copy the extracted ```jpg``` folder
  to the following directory.
@@ -65,11 +65,65 @@ Extract the ```102flowers.tgz``` file and copy the extracted ```jpg``` folder
              |___flowers
     ```
 
-2. Download the captions from
+2. **Download the captions** from
 [here](https://drive.google.com/file/d/0B0ywwgffWnLLcms2WWJQRFNSWXM/).
 Extract the downloaded file, copy the text_c10 folder and paste it in ```
 Data/datasets/flowers``` directory
 
+3. **Download the pretrained skip-thought vectors model** from
+[here](https://github.com/ryankiros/skip-thoughts#getting-started) and copy
+the downloaded files to ```Data/skipthoughts```
+
+**NB:** *It is recommended to keep all the images in an SSD if available. This
+ makes the batch loading and processing operation faster.*
+
+### 3. Data Preprocessing
+Extract the skip-thought features for the captions and prepare the dataset
+for training by running the following script
+
+```
+python dataprep.py --data_dir=Data --dataset=flowers
+```
+
+This script will create a set of pickled files in the datet directory which
+will be used during training.
+
+### 4. Training
+
+
+To train TAC-GAN with the default hyper parameters run the following script
+
+```
+python train.py --dataset="flowers"
+```
+
+the following flags can be set to change the hyperparameters of the network.
+
+FLAG | VALUE TYPE | DEFAULT VALUE | DESCRIPTION
+--- | --- | --- | ---
+z-dim | int | 100 | Number of dimensions of the Noise vector |
+t_dim | int | 512 | Number of dimensions for the latent representation of the text embedding.
+batch_size | int | 64 | Mini-Batch Size.
+image_size | int | 128 | Batch size to use during training.
+gf_dim | int | 64 | Number of conv filters in the first layer of the generator.
+df_dim | int | 64 | Number of conv filters in the first layer of the discriminator.
+caption_vector_length | int | 4800 | Length of the caption vector embedding (vector generated using skip-thought vectors model).
+n_classes | int | 102 | Number of classes
+data_dir | String | Data | Data directory
+learning_rate | float | 0.0002 | Learning rate
+beta1 | float | 0.5 | Momentum for Adam Update
+epochs | int | 200 | Maximum number of epochs to train.
+save_every | int | 30 | Save model and samples after this many number.of iterations
+resume_model | Boolean | False | Load pre-trained model
+data_set | String | flowers | Which dataset to use: "flowers"
+model_name | String | model_1 | Name of the model: Can be anything
+train | bool | True | This is True while training and false otherwise. Used for batch normalization
+
+We used the following script (hyper-parameters) in the paper
+
+```
+python train.py --t_dim=100 --image_size=128 --data_set=flowers --model_name=TAC_GAN --train=True --resume_model=True --z_dim=100 --n_classes=102 --epochs=400 --save_every=20 --caption_vector_length=4800 --batch_size=128
+```
 
 
 
