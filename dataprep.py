@@ -55,7 +55,7 @@ def save_caption_vectors_flowers(data_dir, dt_range=(1, 103)) :
 
     img_dir = join(data_dir, 'flowers/jpg')
     all_caps_dir = join(data_dir, 'flowers/all_captions.txt')
-    target_file_path = os.path.join(data_dir, "flowers/allclasses_.txt")
+    target_file_path = os.path.join(data_dir, "flowers/allclasses.txt")
     caption_dir = join(data_dir, 'flowers/text_c10')
     image_files = [f for f in os.listdir(img_dir) if 'jpg' in f]
     print(image_files[300 :400])
