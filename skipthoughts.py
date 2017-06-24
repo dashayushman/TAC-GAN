@@ -114,7 +114,7 @@ def encode(model, X, use_norm=True, verbose=True, batch_size=128, use_eos=False)
 			print(k)
 		numbatches = len(ds[k]) / batch_size + 1
 		for minibatch in range(int(numbatches)):
-			caps = ds[k][minibatch::numbatches]
+			caps = ds[k][int(minibatch)::int(numbatches)]
 
 			if use_eos:
 				uembedding = numpy.zeros((k+1, len(caps), model['uoptions']['dim_word']), dtype='float32')
