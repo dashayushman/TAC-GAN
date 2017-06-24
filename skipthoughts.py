@@ -113,7 +113,7 @@ def encode(model, X, use_norm=True, verbose=True, batch_size=128, use_eos=False)
 		if verbose:
 			print(k)
 		numbatches = len(ds[k]) / batch_size + 1
-		for minibatch in range(numbatches):
+		for minibatch in range(int(numbatches)):
 			caps = ds[k][minibatch::numbatches]
 
 			if use_eos:
