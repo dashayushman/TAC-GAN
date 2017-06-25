@@ -147,7 +147,7 @@ class GAN :
 
 		reduced_text_embedding = ops.lrelu(
 			ops.linear(t_text_embedding, self.options['t_dim'], 'g_embedding'))
-		z_concat = tf.concat(1, [t_z, reduced_text_embedding])
+		z_concat = tf.concat([t_z, reduced_text_embedding], -1)
 		z_ = ops.linear(z_concat, self.options['gf_dim'] * 8 * s16 * s16,
 		                'g_h0_lin')
 		h0 = tf.reshape(z_, [-1, s16, s16, self.options['gf_dim'] * 8])
