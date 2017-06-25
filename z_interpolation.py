@@ -12,68 +12,69 @@ import numpy as np
 from os.path import join
 
 def main():
-	parser = argparse.ArgumentParser()
-	parser.add_argument('--z_dim', type=int, default=100,
-	                    help='Noise dimension')
+    parser = argparse.ArgumentParser()
+    parser.add_argument('--z_dim', type=int, default=100,
+                        help='Noise dimension')
 
-	parser.add_argument('--t_dim', type=int, default=512,
-	                    help='Text feature dimension')
+    parser.add_argument('--t_dim', type=int, default=512,
+                        help='Text feature dimension')
 
-	parser.add_argument('--batch_size', type=int, default=64,
-	                    help='Batch Size')
+    parser.add_argument('--batch_size', type=int, default=64,
+                        help='Batch Size')
 
-	parser.add_argument('--image_size', type=int, default=128,
-	                    help='Image Size a, a x a')
+    parser.add_argument('--image_size', type=int, default=128,
+                        help='Image Size a, a x a')
 
-	parser.add_argument('--gf_dim', type=int, default=64,
-	                    help='Number of conv in the first layer gen.')
+    parser.add_argument('--gf_dim', type=int, default=64,
+                        help='Number of conv in the first layer gen.')
 
-	parser.add_argument('--df_dim', type=int, default=64,
-	                    help='Number of conv in the first layer discr.')
+    parser.add_argument('--df_dim', type=int, default=64,
+                        help='Number of conv in the first layer discr.')
 
-	parser.add_argument('--caption_vector_length', type=int, default=4800,
-	                    help='Caption Vector Length')
+    parser.add_argument('--caption_vector_length', type=int, default=4800,
+                        help='Caption Vector Length')
 
-	parser.add_argument('--n_classes', type=int, default=102,
-	                    help='Number of classes/class labels')
+    parser.add_argument('--n_classes', type=int, default=102,
+                        help='Number of classes/class labels')
 
-	parser.add_argument('--data_dir', type=str, default="Data",
-	                    help='Data Directory')
+    parser.add_argument('--data_dir', type=str, default="Data",
+                        help='Data Directory')
 
-	parser.add_argument('--learning_rate', type=float, default=0.0002,
-	                    help='Learning Rate')
+    parser.add_argument('--learning_rate', type=float, default=0.0002,
+                        help='Learning Rate')
 
-	parser.add_argument('--beta1', type=float, default=0.5,
-	                    help='Momentum for Adam Update')
+    parser.add_argument('--beta1', type=float, default=0.5,
+                        help='Momentum for Adam Update')
 
-	parser.add_argument('--epochs', type=int, default=200,
-	                    help='Max number of epochs')
+    parser.add_argument('--epochs', type=int, default=200,
+                        help='Max number of epochs')
 
-	parser.add_argument('--data_set', type=str, default="flowers",
-	                    help='Dat set: flowers')
+    parser.add_argument('--data_set', type=str, default="flowers",
+                        help='Dat set: flowers')
 
-	parser.add_argument('--output_dir', type=str, default="Data/ds",
-	                    help='The directory in which this dataset will be '
-	                         'created')
+    parser.add_argument('--output_dir', type=str, default="Data/ds",
+                        help='The directory in which this dataset will be '
+                             'created')
 
-	parser.add_argument('--checkpoints_dir', type=str, default="/tmp",
-	                    help='Path to the checkpoints directory')
+
+    parser.add_argument('--checkpoints_dir', type=str, default="/tmp",
+                        help='Path to the checkpoints directory')
 
     parser.add_argument('--n_interp', type=int, default=100,
-	                    help='The difference between each interpolation. '
+                        help='The difference between each interpolation. '
                              'Should ideally be a multiple of 10')
 
-	parser.add_argument('--n_images', type=int, default=500,
-	                    help='Number of images to randomply sample for '
-	                         'generating interpolation results')
+    parser.add_argument('--n_images', type=int, default=500,
+                        help='Number of images to randomply sample for '
+                             'generating interpolation results')
 
-	args = parser.parse_args()
-	datasets_root_dir = join(args.data_dir, 'datasets')
+    args = parser.parse_args()
+    datasets_root_dir = join(args.data_dir, 'datasets')
 
-	loaded_data = load_training_data(datasets_root_dir, args.data_set,
+    loaded_data = load_training_data(datasets_root_dir, args.data_set,
 						 args.caption_vector_length, args.n_classes)
 
-	model_options = {
+    model_options = {
 		'z_dim': args.z_dim,
 		't_dim': args.t_dim,
 		'batch_size': args.batch_size,
@@ -84,21 +85,21 @@ def main():
 		'n_classes': loaded_data['n_classes']
 	}
 
-	gan = model.GAN(model_options)
-	input_tensors, variables, loss, outputs, checks = gan.build_model()
+    gan = model.GAN(model_options)
+    input_tensors, variables, loss, outputs, checks = gan.build_model()
 
-	sess = tf.InteractiveSession()
-	tf.initialize_all_variables().run()
+    sess = tf.InteractiveSession()
+    tf.initialize_all_variables().run()
 
-	saver = tf.train.Saver(max_to_keep=10000)
-	print('resuming model from checkpoint' +
+    saver = tf.train.Saver(max_to_keep=10000)
+    print('resuming model from checkpoint' +
 	      str(tf.train.latest_checkpoint(args.checkpoints_dir)))
-	if tf.train.latest_checkpoint(args.checkpoints_dir) is not None:
-		saver.restore(sess, tf.train.latest_checkpoint(args.checkpoints_dir))
-		print('Successfully loaded model')
-	else:
-		print('Could not load checkpoints')
-		exit()
+    if tf.train.latest_checkpoint(args.checkpoints_dir) is not None:
+        saver.restore(sess, tf.train.latest_checkpoint(args.checkpoints_dir))
+        print('Successfully loaded model')
+    else:
+        print('Could not load checkpoints')
+        exit()
 
 	random.shuffle(loaded_data['image_list'])
 	selected_images = loaded_data['image_list'][:args.n_images]
