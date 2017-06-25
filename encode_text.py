@@ -20,12 +20,13 @@ def main():
 	with open(file_path) as f:
 		str_captions = f.read()
 		captions = str_captions.split('\n')
-		captions = captions[0: len(captions) - 1]
 		print(captions)
 		encoded_captions['features'] = skipthoughts.encode(model, captions)
 
 	pickle.dump(encoded_captions,
 	            open(dump_path, "wb"))
+	print('Finished extracting Skip-Thought vectors of the given text '
+	      'descriptions')
 
 if __name__ == '__main__':
 	main()
