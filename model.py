@@ -139,12 +139,16 @@ class GAN :
 		}
 
 		checks = {
-			'd_loss1'                   : d_loss1,
-			'd_loss2'                   : d_loss2,
-			'd_loss3'                   : d_loss3,
-			'disc_real_image_logits'    : disc_real_image_logits,
-			'disc_wrong_image_logits'   : disc_wrong_image,
-			'disc_fake_image_logits'    : disc_fake_image_logits
+			'd_loss1': d_loss1,
+			'd_loss2': d_loss2,
+			'd_loss3': d_loss3,
+			'g_loss_1': g_loss_1,
+			'g_loss_2': g_loss_2,
+			'd_loss1_1': d_loss1_1,
+			'd_loss2_1': d_loss2_1,
+			'disc_real_image_logits': disc_real_image_logits,
+			'disc_wrong_image_logits': disc_wrong_image,
+			'disc_fake_image_logits': disc_fake_image_logits
 		}
 
 		return input_tensors, variables, loss, outputs, checks
