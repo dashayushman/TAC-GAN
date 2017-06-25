@@ -58,6 +58,6 @@ def load_image_array(image_file, image_size,
 if __name__ == '__main__':
 	# TEST>>>
 	arr = load_image_array('sample.jpg', 64)
-	print arr.mean()
+	print(arr.mean())
 	# rev = np.fliplr(arr)
 	misc.imsave( 'rev.jpg', arr)
