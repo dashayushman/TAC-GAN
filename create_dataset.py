@@ -49,7 +49,7 @@ def main():
 	                    help='Max number of epochs')
 
 	parser.add_argument('--data_set', type=str, default="flowers",
-	                    help='Dat set: MS-COCO, flowers')
+	                    help='Dat set: flowers')
 
 	parser.add_argument('--output_dir', type=str, default="Data/ds",
 	                    help='The directory in which this dataset will be '
@@ -84,8 +84,7 @@ def main():
 	tf.initialize_all_variables().run()
 
 	saver = tf.train.Saver(max_to_keep=10000)
-
-	print('resuming model from previous checkpoint' +
+	print('resuming model from checkpoint' +
 	      str(tf.train.latest_checkpoint(args.checkpoints_dir)))
 	if tf.train.latest_checkpoint(args.checkpoints_dir) is not None:
 		saver.restore(sess, tf.train.latest_checkpoint(args.checkpoints_dir))
