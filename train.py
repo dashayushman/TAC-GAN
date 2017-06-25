@@ -122,7 +122,8 @@ def main():
 
 			# DISCR UPDATE
 			check_ts = [checks['d_loss1'], checks['d_loss2'],
-							checks['d_loss3']]
+			            checks['d_loss3'], checks['d_loss1_1'],
+			            checks['d_loss2_1']]
 
 			feed = {
 				input_tensors['t_real_image'].name : real_images,
@@ -134,21 +135,26 @@ def main():
 				input_tensors['t_training'].name : args.train
 			}
 
-			_, d_loss, gen, d1, d2, d3= sess.run([d_optim, loss['d_loss'],
-												  outputs['generator']] + check_ts,
-												  feed_dict=feed)
+			_, d_loss, gen, d1, d2, d3, d4, d5= sess.run([d_optim,
+                        loss['d_loss'],outputs['generator']] + check_ts,
+                        feed_dict=feed)
 
-			print("D total loss: {}\nd loss-1 : {} \nd loss-2: {}\nd loss-3: "
-                  "{}".format(d_loss, d1, d2, d3))
+			print("D total loss: {}\n"
+			      "D loss-1 [Real/Fake loss for real images] : {} \n"
+			      "D loss-2 [Real/Fake loss for wrong images]: {} \n"
+			      "D loss-3 [Real/Fake loss for fake images]: {} \n"
+			      "D loss-4 [Aux Classifier loss for real images]: {} \n"
+			      "D loss-5 [Aux Classifier loss for wrong images]: {}"
+			      " ".format(d_loss, d1, d2, d3, d4, d5))
 
 			# GEN UPDATE
 			_, g_loss, gen = sess.run([g_optim, loss['g_loss'],
                                        outputs['generator']], feed_dict=feed)
 
 			# GEN UPDATE TWICE
-			_, g_loss, gen = sess.run([g_optim, loss['g_loss'],
-                                                 outputs['generator']],
-                                                 feed_dict=feed)
+			_, g_loss, gen, g1, g2 = sess.run([g_optim, loss['g_loss'],
+	               outputs['generator'], checks['g_loss_1'], checks['g_loss_2']],
+                   feed_dict=feed)
 			_, g_loss, gen = sess.run([g_optim, loss['g_loss'],
 			                                     outputs['generator']],
 			                                    feed_dict=feed)
@@ -157,6 +163,9 @@ def main():
                   "}\nBatch Number: {}\nEpoch: {},\nTotal Batches per "
                   "epoch: {}\n".format( d_loss, g_loss, batch_no, i,
                     int(len(loaded_data['image_list']) / args.batch_size)))
+			print("\nG loss-1 [Real/Fake loss for fake images] : {} \n"
+			      "G loss-2 [Aux Classifier loss for fake images]: {} \n"
+			      " ".format(g1, g2))
 
 			batch_no += 1
 			if (batch_no % args.save_every) == 0 and batch_no != 0:
