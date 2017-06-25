@@ -48,20 +48,20 @@ def main():
 	parser.add_argument('--epochs', type=int, default=200,
 	                    help='Max number of epochs')
 
-	parser.add_argument('--images_per_caption', type=int, default=30,
-	                    help='The number of images that you want to generate '
-	                         'per text description')
-
 	parser.add_argument('--data_set', type=str, default="flowers",
 	                    help='Dat set: MS-COCO, flowers')
+
+	parser.add_argument('--output_dir', type=str, default="Data/ds",
+	                    help='The directory in which this dataset will be '
+	                         'created')
 
 	parser.add_argument('--checkpoints_dir', type=str, default="/tmp",
 	                    help='Path to the checkpoints directory')
 
 	args = parser.parse_args()
 
-	model_dir, model_stage_1_ds_tr, model_stage_1_ds_val, \
-										datasets_root_dir = prepare_dirs(args)
+	model_stage_1_ds_tr, model_stage_1_ds_val, datasets_root_dir = \
+														prepare_dirs(args)
 
 	loaded_data = load_training_data(datasets_root_dir, args.data_set,
 								 args.caption_vector_length, args.n_classes)
@@ -162,22 +162,19 @@ def main():
 	print('Finished generating images for the validation set captions.\n\n')
 
 def prepare_dirs(args):
-	model_dir = join(args.data_dir, 'training', args.model_name)
-	if not os.path.exists(model_dir):
-		os.makedirs(model_dir)
 
-	model_stage_1_ds_tr = join(model_dir, 'ds', 'train')
+	model_stage_1_ds_tr = join(args.output_dir, 'ds', 'train')
 	if not os.path.exists(model_stage_1_ds_tr):
 		os.makedirs(model_stage_1_ds_tr)
 
-	model_stage_1_ds_val = join(model_dir, 'ds', 'val')
+	model_stage_1_ds_val = join(args.output_dir, 'ds', 'val')
 	if not os.path.exists(model_stage_1_ds_val):
 		os.makedirs(model_stage_1_ds_val)
 
 	datasets_root_dir = join(args.data_dir, 'datasets')
 
-	return model_dir, model_stage_1_ds_tr, model_stage_1_ds_val, \
-	       datasets_root_dir
+	return model_stage_1_ds_tr, model_stage_1_ds_val, datasets_root_dir
+
 
 def load_training_data(data_dir, data_set, caption_vector_length, n_classes):
 	if data_set == 'flowers':
