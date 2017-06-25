@@ -11,6 +11,7 @@ import numpy as np
 
 from os.path import join
 
+
 def main():
     parser = argparse.ArgumentParser()
     parser.add_argument('--z_dim', type=int, default=100,
@@ -69,11 +70,12 @@ def main():
                              'generating interpolation results')
 
     args = parser.parse_args()
+
     datasets_root_dir = join(args.data_dir, 'datasets')
 
     loaded_data = load_training_data(datasets_root_dir, args.data_set,
-                         args.caption_vector_length, args.n_classes)
-
+                                     args.caption_vector_length,
+                                     args.n_classes)
     model_options = {
         'z_dim': args.z_dim,
         't_dim': args.t_dim,
@@ -108,30 +110,44 @@ def main():
     print('Generating Images by interpolating z')
     bar = progressbar.ProgressBar(redirect_stdout=True,
                                   max_value=args.n_images)
+
     for sel_i, (sel_img, sel_cap) in enumerate(zip(selected_images, cap_id)):
-        captions, image_files, image_caps, image_ids, image_caps_ids = \
-            get_images_z_intr(sel_img, sel_cap, loaded_data,
-                              datasets_root_dir, args.batch_size)
+        for sel_j in range(sel_i, len(cap_id)):
+            if sel_i == sel_j:
+                continue
+            sel_img_2 = selected_images[sel_j]
+            sel_cap_2 = cap_id[sel_j]
 
-        z_noise_1 = np.full((args.batch_size, args.z_dim), -1.0)
-        z_noise_2 = np.full((args.batch_size, args.z_dim), 1.0)
-        intr_z_list = get_interp_vec(z_noise_1, z_noise_2, args.z_dim,
-                                     args.n_interp, args.batch_size)
+            captions_1, image_files_1, image_caps_1, image_ids_1, \
+            image_caps_ids_1 = get_images_z_intr(sel_img, sel_cap,
+                                             loaded_data, datasets_root_dir)
 
-        for z_i, z_noise in enumerate(intr_z_list):
-            val_feed = {
-                input_tensors['t_real_caption'].name: captions,
-                input_tensors['t_z'].name: z_noise,
-                input_tensors['t_training'].name: True
-            }
+            captions_2, image_files_2, image_caps_2, image_ids_2, \
+            image_caps_ids_2 = get_images_z_intr(sel_img_2, sel_cap_2,
+                                             loaded_data, datasets_root_dir)
 
-            val_gen = sess.run([outputs['generator']], feed_dict=val_feed)
+            z_noise_1 = np.random.uniform(-1, 1, [args.batch_size, args.z_dim])
+            z_noise_2 = np.random.uniform(-1, 1, [args.batch_size, args.z_dim])
+            intr_z_list = get_interp_vec(z_noise_1, z_noise_2, args.z_dim,
+                                         args.n_interp, args.batch_size)
 
-            save_distributed_image_batch(args.output_dir, val_gen, sel_i, z_i,
-                                         sel_img, sel_cap, args.batch_size)
-        bar.update(sel_i)
-    bar.finish()
-    print('Finished generating interpolated images')
+            intr_t_list = get_interp_vec(captions_1, captions_2,
+                                         args.caption_vector_length,
+                                         args.n_interp, args.batch_size)
+
+            for z_i, z_noise in enumerate(intr_z_list):
+                for t_i, captions in enumerate(intr_t_list):
+                    val_feed = {
+                        input_tensors['t_real_caption'].name: captions,
+                        input_tensors['t_z'].name: z_noise,
+                        input_tensors['t_training'].name: True
+                    }
+                    val_gen = sess.run([outputs['generator']],
+                                       feed_dict=val_feed)
+
+                    save_distributed_image_batch(args.output_dir, val_gen,
+                                 sel_i, sel_j, z_i, t_i, sel_img, sel_cap,
+                                 sel_img_2, sel_cap_2, args.batch_size)
 
 
 def load_training_data(data_dir, data_set, caption_vector_length, n_classes):
@@ -150,6 +166,7 @@ def load_training_data(data_dir, data_set, caption_vector_length, n_classes):
         val_image_ids = pickle.load(
             open(join(data_dir, 'flowers', 'val_ids.pkl'), "rb"))
 
+        # n_classes = n_classes
         max_caps_len = caption_vector_length
 
         tr_n_imgs = len(tr_image_ids)
@@ -169,20 +186,26 @@ def load_training_data(data_dir, data_set, caption_vector_length, n_classes):
         }
 
     else:
-        raise Exception('Dataset Not Found!!')
+        raise Exception('Dataset Not Found')
 
-def save_distributed_image_batch(data_dir, generated_images, sel_i, z_i,
-                                 sel_img, sel_cap, batch_size):
+
+def save_distributed_image_batch(data_dir, generated_images, sel_i, sel_2, z_i,
+                                 t_i, sel_img, sel_cap, sel_img_2, sel_cap_2,
+                                 batch_size):
 
     generated_images = np.squeeze(generated_images)
-    image_dir = join(data_dir, 'z_interpolation', str(sel_i))
+    folder_name = str(sel_i) + '_' + str(sel_2)
+
+    image_dir = join(data_dir, 't_interpolation', folder_name, str(z_i))
     if not os.path.exists(image_dir):
         os.makedirs(image_dir)
+
     meta_path = os.path.join(image_dir, "meta.txt")
     with open(meta_path, "w") as text_file:
-        text_file.write(str(sel_img) + "\t" + str(sel_cap))
-    fake_image_255 = generated_images[batch_size - 1]
-    scipy.misc.imsave(join(image_dir, '{}.jpg'.format(z_i)),
+        text_file.write(str(sel_img) + "\t" + str(sel_cap) +
+                        str(sel_img_2) + "\t" + str(sel_cap_2))
+    fake_image_255 = (generated_images[batch_size-1])
+    scipy.misc.imsave(join(image_dir, '{}.jpg'.format(t_i)),
                       fake_image_255)
 
 
@@ -190,13 +213,11 @@ def get_images_z_intr(sel_img, sel_cap, loaded_data, data_dir, batch_size=64):
 
     captions = np.zeros((batch_size, loaded_data['max_caps_len']))
     batch_idx = np.random.randint(0, loaded_data['data_length'],
-                                 size = batch_size-1)
-
+                                  size=batch_size - 1)
     image_ids = np.take(loaded_data['image_list'], batch_idx)
     image_files = []
     image_caps = []
     image_caps_ids = []
-
     for idx, image_id in enumerate(image_ids):
         image_file = join(data_dir,
                           'flowers/jpg/' + image_id)
@@ -206,12 +227,11 @@ def get_images_z_intr(sel_img, sel_cap, loaded_data, data_dir, batch_size=64):
             loaded_data['captions'][image_id][random_caption][
             0:loaded_data['max_caps_len']]
         str_cap = loaded_data['str_captions'][image_id][random_caption]
-
         image_caps.append(loaded_data['captions']
                           [image_id][random_caption])
         image_files.append(image_file)
         if idx == batch_size-2:
-            idx = idx+1
+            idx = idx + 1
             image_id = sel_img
             image_file = join(data_dir,
                               'flowers/jpg/' + sel_img)
@@ -232,14 +252,13 @@ def get_images_z_intr(sel_img, sel_cap, loaded_data, data_dir, batch_size=64):
 def get_interp_vec(vec_1, vec_2, dim, n_interp, batch_size):
 
     intrip_list = []
-    bals = np.arange(0, 1, 1/n_interp)
+    bals = np.arange(0, 1, 1 / n_interp)
     for bal in bals:
         left = np.full((batch_size, dim), bal)
         right = np.full((batch_size, dim), 1.0 - bal)
         intrip_vec = np.multiply(vec_1, left) + np.multiply(vec_2, right)
         intrip_list.append(intrip_vec)
     return intrip_list
-
 
 if __name__ == '__main__':
     main()
