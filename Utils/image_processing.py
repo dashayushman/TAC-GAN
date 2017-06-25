@@ -55,6 +55,21 @@ def load_image_array(image_file, image_size,
 
 	return img_resized.astype('float32')
 
+def load_image_inception(image_file, image_size=128):
+	img = skimage.io.imread(image_file)
+	# GRAYSCALE
+	if len(img.shape) == 2:
+		img_new = np.ndarray((img.shape[0], img.shape[1], 3), dtype='uint8')
+		img_new[:, :, 0] = img
+		img_new[:, :, 1] = img
+		img_new[:, :, 2] = img
+		img = img_new
+
+	if image_size != 0:
+		img = skimage.transform.resize(img, (image_size, image_size), mode='reflect')
+
+	return img.astype('int32')
+
 if __name__ == '__main__':
 	# TEST>>>
 	arr = load_image_array('sample.jpg', 64)
