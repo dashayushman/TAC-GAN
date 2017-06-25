@@ -155,9 +155,6 @@ def main():
 			_, g_loss, gen, g1, g2 = sess.run([g_optim, loss['g_loss'],
 	               outputs['generator'], checks['g_loss_1'], checks['g_loss_2']],
                    feed_dict=feed)
-			_, g_loss, gen = sess.run([g_optim, loss['g_loss'],
-			                                     outputs['generator']],
-			                                    feed_dict=feed)
 
 			print("LOSSES\nDiscriminator Loss: {}\nGenerator Loss: {"
                   "}\nBatch Number: {}\nEpoch: {},\nTotal Batches per "
