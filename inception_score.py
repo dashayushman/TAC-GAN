@@ -30,7 +30,7 @@ def prepare_inception_data(o_dir, i_dir):
 		bar.finish()
 		print('Total number of files: {}'.format(cnt))
 
-def load_images(o_dir, i_dir, root_dir, n_images=3000, size=128):
+def load_images(o_dir, i_dir, n_images=3000, size=128):
 	prepare_inception_data(o_dir, i_dir)
 	image_list = []
 	done = False
