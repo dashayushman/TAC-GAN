@@ -163,7 +163,7 @@ def load_training_data(data_dir, data_set, caption_vector_length, n_classes):
 def save_distributed_image_batch(data_dir, generated_images, sel_i, z_i,
                                  sel_img, sel_cap):
 
-    image_dir = join(data_dir, str(sel_i))
+    image_dir = join(data_dir, 'interpolation', str(sel_i))
     if not os.path.exists(image_dir):
         os.makedirs(image_dir)
     meta_path = os.path.join(image_dir, "meta.txt")
