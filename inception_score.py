@@ -24,7 +24,7 @@ def prepare_inception_data(root_dir):
 						dest_new_name = os.path.join(root_dir, f_name)
 						copy(file_dir, root_dir)
 						os.rename(dest_path, dest_new_name)
-		print cnt
+		print(cnt)
 
 def load_images(root_dir, n_images=80000, size=128):
 	image_list = []
