@@ -64,7 +64,7 @@ def main():
 						help='model_1 or model_2')
 
 	parser.add_argument('--train', type = bool, default = True,
-	                    help = 'True while training and False otherwise')
+	                    help = 'True while training and otherwise')
 
 	args = parser.parse_args()
 	model_dir, model_chkpnts_dir, model_samples_dir, \
@@ -225,6 +225,7 @@ def main():
 								 val_image_ids, args.image_size,
 								 val_viz_cnt)
 
+
 def load_training_data(data_dir, data_set, caption_vector_length, n_classes) :
 	if data_set == 'flowers' :
 		flower_str_captions = pickle.load(
@@ -260,6 +261,7 @@ def load_training_data(data_dir, data_set, caption_vector_length, n_classes) :
 	else :
 		raise Exception('No Dataset Found')
 
+
 def initialize_directories(args):
 	model_dir = join(args.data_dir, 'training', args.model_name)
 	if not os.path.exists(model_dir):
@@ -280,10 +282,11 @@ def initialize_directories(args):
 	return model_dir, model_chkpnts_dir, model_samples_dir, \
 		   model_val_samples_dir
 
+
 def save_for_viz_val(data_dir, generated_images, image_files, image_caps,
                      image_ids, image_size, id):
 
-	generated_images = np.array(generated_images)
+	generated_images = np.squeeze(np.array(generated_images))
 	for i in range(0, generated_images.shape[0]) :
 		image_dir = join(data_dir, str(image_ids[i]))
 		if not os.path.exists(image_dir):
@@ -301,9 +304,10 @@ def save_for_viz_val(data_dir, generated_images, image_files, image_caps,
 			with open(caps_dir, "w") as text_file:
 				text_file.write(image_caps[i]+"\n")
 
-		fake_images_255 = (generated_images[i, :, :, :])
+		fake_images_255 = generated_images[i]
 		scipy.misc.imsave(join(image_dir, 'fake_image_{}.jpg'.format(id)),
 		                  fake_images_255)
+
 
 def save_for_vis(data_dir, real_images, generated_images, image_files,
                  image_caps, image_ids) :
@@ -327,6 +331,7 @@ def save_for_vis(data_dir, real_images, generated_images, image_files,
 		text_file.write(str_caps)
 	with open(join(data_dir, "ids.txt"), "w") as text_file:
 		text_file.write(str_image_ids)
+
 
 def get_val_caps_batch(batch_size, loaded_data, data_set, data_dir):
 
@@ -353,6 +358,7 @@ def get_val_caps_batch(batch_size, loaded_data, data_set, data_dir):
 		return captions, image_files, image_caps, image_ids
 	else:
 		raise Exception('Dataset not found')
+
 
 def get_training_batch(batch_no, batch_size, image_size, z_dim, split,
                        data_dir, data_set, loaded_data = None) :
@@ -412,6 +418,7 @@ def get_training_batch(batch_no, batch_size, image_size, z_dim, split,
 		       real_classes, wrong_classes, image_caps, image_ids
 	else:
 		raise Exception('Dataset not found')
+
 
 if __name__ == '__main__' :
 	main()
