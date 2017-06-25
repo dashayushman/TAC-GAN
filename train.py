@@ -96,7 +96,7 @@ def main():
 											var_list=variables['g_vars'])
 
 	sess = tf.InteractiveSession()
-	tf.initialize_all_variables().run()
+	tf.global_variables_initializer().run()
 	saver = tf.train.Saver(max_to_keep=10000)
 
 	if args.resume_model:
@@ -147,12 +147,10 @@ def main():
 
 			# GEN UPDATE TWICE
 			_, g_loss, gen, attn_spn = sess.run([g_optim, loss['g_loss'],
-                                                 outputs['generator'],
-                                                 checks['attn_span']],
+                                                 outputs['generator']],
                                                  feed_dict=feed)
 			_, g_loss, gen, attn_spn = sess.run([g_optim, loss['g_loss'],
-			                                     outputs['generator'],
-			                                     checks['attn_span']],
+			                                     outputs['generator']],
 			                                    feed_dict=feed)
 
 			print("LOSSES\nDiscriminator Loss: {}\nGenerator Loss: {"
