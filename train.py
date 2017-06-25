@@ -80,7 +80,6 @@ def main():
 		'image_size': args.image_size,
 		'gf_dim': args.gf_dim,
 		'df_dim': args.df_dim,
-		'gfc_dim': args.gfc_dim,
 		'caption_vector_length': args.caption_vector_length,
 		'n_classes': loaded_data['n_classes']
 	}
