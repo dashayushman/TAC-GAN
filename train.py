@@ -283,7 +283,8 @@ def initialize_directories(args):
 def save_for_viz_val(data_dir, generated_images, image_files, image_caps,
                      image_ids, image_size, id):
 
-	for i in range(0, np.array(generated_images).shape[0]) :
+	generated_images = np.array(generated_images)
+	for i in range(0, generated_images.shape[0]) :
 		image_dir = join(data_dir, str(image_ids[i]))
 		if not os.path.exists(image_dir):
 			os.makedirs(image_dir)
