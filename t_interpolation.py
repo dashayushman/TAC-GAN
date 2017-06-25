@@ -113,7 +113,7 @@ def main():
 
     for sel_i, (sel_img, sel_cap) in enumerate(zip(selected_images, cap_id)):
         for sel_j in range(sel_i, len(cap_id)):
-            print(sel_i + '\t->\t' + sel_j)
+            print(str(sel_i) + '\t->\t' + str(sel_j))
             if sel_i == sel_j:
                 continue
             sel_img_2 = selected_images[sel_j]
