@@ -107,7 +107,7 @@ def main():
     selected_images = loaded_data['image_list'][:args.n_images]
     cap_id = [np.random.randint(0, 4) for cap_i in range(len(selected_images))]
 
-    print('Generating Images by interpolating z')
+    print('Generating Images by interpolating the text features and z')
     bar = progressbar.ProgressBar(redirect_stdout=True,
                                   max_value=args.n_images)
 
@@ -148,7 +148,9 @@ def main():
                     save_distributed_image_batch(args.output_dir, val_gen,
                                  sel_i, sel_j, z_i, t_i, sel_img, sel_cap,
                                  sel_img_2, sel_cap_2, args.batch_size)
-
+        bar.update(sel_i)
+    bar.finish()
+    print('Finished generating interpolated images')
 
 def load_training_data(data_dir, data_set, caption_vector_length, n_classes):
     if data_set == 'flowers':
