@@ -20,7 +20,6 @@ def prepare_inception_data(o_dir, i_dir):
 					if 'jpg' in f:
 						f_name = str(cnt) + '_ins.' + f.split('.')[-1]
 						cnt += 1
-						print(cnt)
 						file_dir = os.path.join(root, f)
 						dest_path = os.path.join(o_dir, f)
 						dest_new_name = os.path.join(o_dir, f_name)
