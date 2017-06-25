@@ -105,7 +105,7 @@ def save_caption_vectors_flowers(data_dir, dt_range=(1, 103)) :
             print(i, len(image_captions), img)
             print("Seconds", time.time() - st)
 
-    img_ids = image_captions.keys()
+    img_ids = list(image_captions.keys())
 
     random.shuffle(img_ids)
     n_train_instances = int(len(img_ids) * 0.9)
