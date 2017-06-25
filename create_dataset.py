@@ -114,7 +114,7 @@ def main():
 				input_tensors['t_z'].name: z_noise,
 				input_tensors['t_real_classes'].name: real_classes,
 				input_tensors['t_wrong_classes'].name: wrong_classes,
-				input_tensors['t_training'].name: args.train
+				input_tensors['t_training'].name: True
 			}
 
 			g_loss, gen = sess.run([loss['g_loss'], outputs['generator']],
