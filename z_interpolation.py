@@ -163,13 +163,14 @@ def load_training_data(data_dir, data_set, caption_vector_length, n_classes):
 def save_distributed_image_batch(data_dir, generated_images, sel_i, z_i,
                                  sel_img, sel_cap, batch_size):
 
+	generated_images = np.squeeze(generated_images)
     image_dir = join(data_dir, 'interpolation', str(sel_i))
     if not os.path.exists(image_dir):
         os.makedirs(image_dir)
     meta_path = os.path.join(image_dir, "meta.txt")
     with open(meta_path, "w") as text_file:
         text_file.write(str(sel_img) + "\t" + str(sel_cap))
-    fake_image_255 = (generated_images[batch_size-1])
+    fake_image_255 = generated_images[batch_size-1]
     scipy.misc.imsave(join(image_dir, '{}.jpg'.format(z_i)),
                   fake_image_255)
 
