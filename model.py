@@ -214,7 +214,7 @@ class GAN :
 		                           [1, 8, 8, 1],
 		                           name = 'tiled_embeddings')
 
-		h3_concat = tf.concat(3, [h3, tiled_embeddings], name = 'h3_concat')
+		h3_concat = tf.concat([h3, tiled_embeddings], 3, name = 'h3_concat')
 		h3_new = ops.lrelu(slim.batch_norm(ops.conv2d(h3_concat,
 												self.options['df_dim'] * 8,
 													  1, 1, 1, 1,
