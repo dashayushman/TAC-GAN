@@ -67,8 +67,10 @@ def main():
 	                    help = 'True while training and otherwise')
 
 	args = parser.parse_args()
-	model_dir, model_chkpnts_dir, model_samples_dir, \
-					model_val_samples_dir = initialize_directories(args)
+
+	model_dir, model_chkpnts_dir, model_samples_dir, model_val_samples_dir,\
+							model_summaries_dir = initialize_directories(args)
+
 	datasets_root_dir = join(args.data_dir, 'datasets')
 	loaded_data = load_training_data(datasets_root_dir, args.data_set,
 	                                 args.caption_vector_length,
@@ -95,7 +97,11 @@ def main():
 									 beta1=args.beta1).minimize(loss['g_loss'],
 											var_list=variables['g_vars'])
 
+	merged = tf.summary.merge_all()
 	sess = tf.InteractiveSession()
+
+	summary_writer = tf.summary.FileWriter(model_summaries_dir, sess.graph)
+
 	tf.global_variables_initializer().run()
 	saver = tf.train.Saver(max_to_keep=10000)
 
@@ -152,10 +158,10 @@ def main():
                                        outputs['generator']], feed_dict=feed)
 
 			# GEN UPDATE TWICE
-			_, g_loss, gen, g1, g2 = sess.run([g_optim, loss['g_loss'],
-	               outputs['generator'], checks['g_loss_1'], checks['g_loss_2']],
-                   feed_dict=feed)
-
+			_, summary, g_loss, gen, g1, g2 = sess.run([g_optim, merged,
+                   loss['g_loss'], outputs['generator'], checks['g_loss_1'],
+                   checks['g_loss_2']], feed_dict=feed)
+			summary_writer.add_summary(summary)
 			print("LOSSES\nDiscriminator Loss: {}\nGenerator Loss: {"
                   "}\nBatch Number: {}\nEpoch: {},\nTotal Batches per "
                   "epoch: {}\n".format( d_loss, g_loss, batch_no, i,
@@ -277,6 +283,10 @@ def initialize_directories(args):
 	if not os.path.exists(model_chkpnts_dir):
 		os.makedirs(model_chkpnts_dir)
 
+	model_summaries_dir = join(model_dir, 'summaries')
+	if not os.path.exists(model_summaries_dir):
+		os.makedirs(model_summaries_dir)
+
 	model_samples_dir = join(model_dir, 'samples')
 	if not os.path.exists(model_samples_dir):
 		os.makedirs(model_samples_dir)
@@ -286,7 +296,7 @@ def initialize_directories(args):
 		os.makedirs(model_val_samples_dir)
 
 	return model_dir, model_chkpnts_dir, model_samples_dir, \
-		   model_val_samples_dir
+		   model_val_samples_dir, model_summaries_dir
 
 
 def save_for_viz_val(data_dir, generated_images, image_files, image_caps,

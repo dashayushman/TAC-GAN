@@ -67,6 +67,21 @@ class GAN :
 				fake_image, t_real_caption, self.options['n_classes'],
 				t_training, reuse = True)
 
+		d_right_predictions = tf.equal(tf.argmax(disc_real_image_aux, 1),
+		                               tf.argmax(t_real_classes, 1))
+		d_right_accuracy = tf.reduce_mean(tf.cast(d_right_predictions,
+		                                          tf.float32))
+
+		d_wrong_predictions = tf.equal(tf.argmax(disc_wrong_image_aux, 1),
+		                               tf.argmax(t_wrong_classes, 1))
+		d_wrong_accuracy = tf.reduce_mean(tf.cast(d_wrong_predictions,
+		                                          tf.float32))
+
+		d_fake_predictions = tf.equal(tf.argmax(disc_fake_image_aux_logits, 1),
+		                              tf.argmax(t_real_classes, 1))
+		d_fake_accuracy = tf.reduce_mean(tf.cast(d_fake_predictions,
+		                                         tf.float32))
+
 		tf.get_variable_scope()._reuse = False
 
 		print('Building the Loss Function')
@@ -109,6 +124,14 @@ class GAN :
 		for v in t_vars:
 			print(v.name)
 			print(v)
+			self.add_histogram_summary(v.name, v)
+
+		self.add_tb_scalar_summaries(d_loss, g_loss, d_loss1, d_loss2, d_loss3,
+              d_loss1_1, d_loss2_1, g_loss_1, g_loss_2, d_right_accuracy,
+              d_wrong_accuracy, d_fake_accuracy)
+
+		self.add_image_summary('Generated Images', fake_image,
+		                       self.options['batch_size'])
 
 		d_vars = [var for var in t_vars if 'd_' in var.name]
 		g_vars = [var for var in t_vars if 'g_' in var.name]
@@ -153,6 +176,45 @@ class GAN :
 
 		return input_tensors, variables, loss, outputs, checks
 
+	def add_tb_scalar_summaries(self, d_loss, g_loss, d_loss1, d_loss2,
+	                              d_loss3, d_loss1_1, d_loss2_1, g_loss_1,
+	                              g_loss_2, d_right_accuracy,
+	                              d_wrong_accuracy, d_fake_accuracy):
+
+		self.add_scalar_summary("D_Loss", d_loss)
+		self.add_scalar_summary("G_Loss", g_loss)
+		self.add_scalar_summary("D loss-1 [Real/Fake loss for real images]",
+		                        d_loss1)
+		self.add_scalar_summary("D loss-2 [Real/Fake loss for wrong images]",
+		                        d_loss2)
+		self.add_scalar_summary("D loss-3 [Real/Fake loss for fake images]",
+		                        d_loss3)
+		self.add_scalar_summary(
+			"D loss-4 [Aux Classifier loss for real images]", d_loss1_1)
+		self.add_scalar_summary(
+			"D loss-5 [Aux Classifier loss for wrong images]", d_loss2_1)
+		self.add_scalar_summary("G loss-1 [Real/Fake loss for fake images]",
+		                        g_loss_1)
+		self.add_scalar_summary(
+			"G loss-2 [Aux Classifier loss for fake images]", g_loss_2)
+		self.add_scalar_summary("Discriminator Real Image Accuracy",
+		                        d_right_accuracy)
+		self.add_scalar_summary("Discriminator Wrong Image Accuracy",
+		                        d_wrong_accuracy)
+		self.add_scalar_summary("Discriminator Fake Image Accuracy",
+		                        d_fake_accuracy)
+
+	def add_scalar_summary(self, name, var):
+		with tf.name_scope('summaries'):
+			tf.summary.scalar(name, var)
+
+	def add_histogram_summary(self, name, var):
+		with tf.name_scope('summaries'):
+			tf.summary.histogram(name, var)
+
+	def add_image_summary(self, name, var, max_outputs=1):
+		with tf.name_scope('summaries'):
+			tf.summary.image(name, var, max_outputs=max_outputs)
 
 	# GENERATOR IMPLEMENTATION based on :
 	# https://github.com/carpedm20/DCGAN-tensorflow/blob/master/model.py
