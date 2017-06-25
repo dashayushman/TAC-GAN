@@ -4,6 +4,7 @@ import pickle
 import scipy.misc
 import random
 import os
+import progressbar
 
 import tensorflow as tf
 import numpy as np
@@ -91,7 +92,7 @@ def main():
 	      str(tf.train.latest_checkpoint(args.checkpoints_dir)))
 	if tf.train.latest_checkpoint(args.checkpoints_dir) is not None:
 		saver.restore(sess, tf.train.latest_checkpoint(args.checkpoints_dir))
-		print('Successfully loaded model from ')
+		print('Successfully loaded model')
 	else:
 		print('Could not load checkpoints')
 		exit()
@@ -100,7 +101,9 @@ def main():
 	selected_images = loaded_data['image_list'][:args.n_images]
 	cap_id = [np.random.randint(0, 4) for cap_i in range(len(selected_images))]
 
-
+	print('Generating Images by interpolating z')
+	bar = progressbar.ProgressBar(redirect_stdout=True,
+								  max_value=args.n_images)
 	for sel_i, (sel_img, sel_cap) in enumerate(zip(selected_images, cap_id)):
 		captions, image_files, image_caps, image_ids, image_caps_ids = \
 			get_images_z_intr(sel_img, sel_cap, loaded_data,
@@ -121,6 +124,9 @@ def main():
 
 			save_distributed_image_batch(args.output_dir, val_gen, sel_i, z_i,
 			                             sel_img, sel_cap, args.batch_size)
+		bar.update(sel_i)
+	bar.finish()
+	print('Finished generating interpolated images')
 
 
 def load_training_data(data_dir, data_set, caption_vector_length, n_classes):
