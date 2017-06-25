@@ -213,7 +213,7 @@ def load_training_data(data_dir, data_set, caption_vector_length, n_classes):
 
 
 def save_distributed_image_batch(data_dir, generated_images, image_caps,
-					 image_ids, caps_ids, attn_spn):
+					 image_ids, caps_ids):
 	for i, (image_id, caps_id, image_cap) in enumerate(zip( image_ids, \
 			caps_ids, image_caps)):
 		image_dir = join(data_dir, str(image_id), str(caps_id))
