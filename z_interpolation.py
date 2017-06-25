@@ -59,10 +59,13 @@ def main():
 	parser.add_argument('--checkpoints_dir', type=str, default="/tmp",
 	                    help='Path to the checkpoints directory')
 
+    parser.add_argument('--n_interp', type=int, default=100,
+	                    help='The difference between each interpolation. '
+                             'Should ideally be a multiple of 10')
+
 	parser.add_argument('--n_images', type=int, default=500,
 	                    help='Number of images to randomply sample for '
-	                         'generating interpolation results.')
-
+	                         'generating interpolation results')
 
 	args = parser.parse_args()
 	datasets_root_dir = join(args.data_dir, 'datasets')
@@ -111,7 +114,8 @@ def main():
 
 		z_noise_1 = np.full((args.batch_size, args.z_dim), -1.0)
 		z_noise_2 = np.full((args.batch_size, args.z_dim), 1.0)
-		intr_z_list = get_interp_vec(z_noise_1, z_noise_2, args.z_dim)
+		intr_z_list = get_interp_vec(z_noise_1, z_noise_2, args.z_dim,
+                                     args.n_interp, args.batch_size)
 
 		for z_i, z_noise in enumerate(intr_z_list):
 			val_feed = {
@@ -224,13 +228,13 @@ def get_images_z_intr(sel_img, sel_cap, loaded_data, data_dir, batch_size=64):
 	return captions, image_files, image_caps, image_ids, image_caps_ids
 
 
-def get_interp_vec(vec_1, vec_2, dim):
+def get_interp_vec(vec_1, vec_2, dim, n_interp, batch_size):
 
 	intrip_list = []
-	bals = np.arange(0, 1, 0.01)
+	bals = np.arange(0, 1, 1/n_interp)
 	for bal in bals:
-		left = np.full((64, dim), bal)
-		right = np.full((64, dim), 1.0 - bal)
+		left = np.full((batch_size, dim), bal)
+		right = np.full((batch_size, dim), 1.0 - bal)
 		intrip_vec = np.multiply(vec_1, left) + np.multiply(vec_2, right)
 		intrip_list.append(intrip_vec)
 	return intrip_list
