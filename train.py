@@ -138,7 +138,7 @@ def main():
 												  outputs['generator']] + check_ts,
 												  feed_dict=feed)
 
-			print("D total loss: {}\vd loss-1 : {} \nd loss-2: {}\nd loss-3: "
+			print("D total loss: {}\nd loss-1 : {} \nd loss-2: {}\nd loss-3: "
                   "{}".format(d_loss, d1, d2, d3))
 
 			# GEN UPDATE
@@ -146,10 +146,10 @@ def main():
                                        outputs['generator']], feed_dict=feed)
 
 			# GEN UPDATE TWICE
-			_, g_loss, gen, attn_spn = sess.run([g_optim, loss['g_loss'],
+			_, g_loss, gen = sess.run([g_optim, loss['g_loss'],
                                                  outputs['generator']],
                                                  feed_dict=feed)
-			_, g_loss, gen, attn_spn = sess.run([g_optim, loss['g_loss'],
+			_, g_loss, gen = sess.run([g_optim, loss['g_loss'],
 			                                     outputs['generator']],
 			                                    feed_dict=feed)
 
