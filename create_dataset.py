@@ -231,7 +231,7 @@ def save_distributed_image_batch(data_dir, generated_images, image_caps,
 		if i == 0:
 			scipy.misc.imsave(join(collection_dir, '{}.jpg'.format(image_id)),
 							  fake_image_255)
-		num_files = len(os.walk(image_dir).next()[2])
+		num_files = len(os.walk(image_dir).__next__()[2])
 		scipy.misc.imsave(join(image_dir, '{}.jpg'.format(num_files + 1)),
 						  fake_image_255)
 
