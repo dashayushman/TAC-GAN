@@ -20,6 +20,8 @@ class GAN :
 		self.options = options
 
 	def build_model(self) :
+
+		print('Initializing placeholder')
 		img_size = self.options['image_size']
 		t_real_image = tf.placeholder('float32', [self.options['batch_size'],
 		                              img_size, img_size, 3],
@@ -45,9 +47,11 @@ class GAN :
 
 		t_training = tf.placeholder(tf.bool, name='training')
 
+		print('Building the Generator')
 		fake_image = self.generator(t_z, t_real_caption,
 												 t_training)
 
+		print('Building the Discriminator')
 		disc_real_image, disc_real_image_logits, disc_real_image_aux, \
 			disc_real_image_aux_logits = self.discriminator(
 				t_real_image, t_real_caption, self.options['n_classes'],
@@ -65,28 +69,36 @@ class GAN :
 
 		tf.get_variable_scope()._reuse = False
 
-		g_loss_1 = tf.reduce_mean(
-			tf.nn.sigmoid_cross_entropy_with_logits(disc_fake_image_logits,
-		                                        tf.ones_like(disc_fake_image)))
+		print('Building the Loss Function')
+		g_loss_1 = tf.reduce_mean(tf.nn.sigmoid_cross_entropy_with_logits(
+								  logits=disc_fake_image_logits,
+								  labels=tf.ones_like(disc_fake_image)))
+
 		g_loss_2 = tf.reduce_mean(
-			tf.nn.sigmoid_cross_entropy_with_logits(disc_fake_image_aux_logits,
-			                                        t_real_classes))
+			tf.nn.sigmoid_cross_entropy_with_logits(
+											logits=disc_fake_image_aux_logits,
+	                                        labels=t_real_classes))
 
 		d_loss1 = tf.reduce_mean(
-			tf.nn.sigmoid_cross_entropy_with_logits(disc_real_image_logits,
-			                                        tf.ones_like(disc_real_image)))
+			tf.nn.sigmoid_cross_entropy_with_logits(
+										logits=disc_real_image_logits,
+			                            labels=tf.ones_like(disc_real_image)))
 		d_loss1_1 = tf.reduce_mean(
-			tf.nn.sigmoid_cross_entropy_with_logits(disc_real_image_aux_logits,
-			                                        t_real_classes))
+			tf.nn.sigmoid_cross_entropy_with_logits(
+											logits=disc_real_image_aux_logits,
+	                                        labels=t_real_classes))
 		d_loss2 = tf.reduce_mean(
-			tf.nn.sigmoid_cross_entropy_with_logits(disc_wrong_image_logits,
-			                                        tf.zeros_like(disc_wrong_image)))
+			tf.nn.sigmoid_cross_entropy_with_logits(
+									logits=disc_wrong_image_logits,
+                                    labels=tf.zeros_like(disc_wrong_image)))
 		d_loss2_1 = tf.reduce_mean(
-			tf.nn.sigmoid_cross_entropy_with_logits(disc_wrong_image_aux_logits,
-			                                        t_wrong_classes))
+			tf.nn.sigmoid_cross_entropy_with_logits(
+											logits=disc_wrong_image_aux_logits,
+	                                        labels=t_wrong_classes))
 		d_loss3 = tf.reduce_mean(
-			tf.nn.sigmoid_cross_entropy_with_logits(disc_fake_image_logits,
-													tf.zeros_like(disc_fake_image)))
+			tf.nn.sigmoid_cross_entropy_with_logits(
+										logits=disc_fake_image_logits,
+										labels=tf.zeros_like(disc_fake_image)))
 
 		d_loss = d_loss1 + d_loss1_1 + d_loss2 + d_loss2_1 + d_loss3 + g_loss_2
 		
