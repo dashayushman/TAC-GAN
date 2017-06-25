@@ -166,11 +166,11 @@ def prepare_dirs(args):
 	if not os.path.exists(model_dir):
 		os.makedirs(model_dir)
 
-	model_stage_1_ds_tr = join(model_dir, 'stage_1_ds', 'train')
+	model_stage_1_ds_tr = join(model_dir, 'ds', 'train')
 	if not os.path.exists(model_stage_1_ds_tr):
 		os.makedirs(model_stage_1_ds_tr)
 
-	model_stage_1_ds_val = join(model_dir, 'stage_1_ds', 'val')
+	model_stage_1_ds_val = join(model_dir, 'ds', 'val')
 	if not os.path.exists(model_stage_1_ds_val):
 		os.makedirs(model_stage_1_ds_val)
 
