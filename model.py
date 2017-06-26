@@ -263,14 +263,14 @@ class GAN :
 			ops.conv2d(image, self.options['df_dim'], name = 'd_h0_conv'))  # 64
 
 		h1 = ops.lrelu(slim.batch_norm(ops.conv2d(h0,
-		                                     self.options['df_dim'] * 2,
+		                                     self.options['df_dim'] * 8,
 		                                     name = 'd_h1_conv'),
 		                               reuse=reuse,
 		                               is_training = t_training,
 		                               scope = 'd_bn1'))  # 32
 
 		h2 = ops.lrelu(slim.batch_norm(ops.conv2d(h1,
-		                                     self.options['df_dim'] * 4,
+		                                     self.options['df_dim'] * 6,
 		                                     name = 'd_h2_conv'),
 		                               reuse=reuse,
 		                               is_training = t_training,
@@ -294,7 +294,7 @@ class GAN :
 
 		h3_concat = tf.concat([h3, tiled_embeddings], 3, name = 'h3_concat')
 		h3_new = ops.lrelu(slim.batch_norm(ops.conv2d(h3_concat,
-												self.options['df_dim'] * 8,
+												self.options['df_dim'] * 4,
 													  1, 1, 1, 1,
 												name = 'd_h3_conv_new'),
 		                                reuse=reuse,

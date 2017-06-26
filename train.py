@@ -97,6 +97,7 @@ def main():
 									 beta1=args.beta1).minimize(loss['g_loss'],
 											var_list=variables['g_vars'])
 
+	global_step_tensor = tf.Variable(1, trainable=False, name='global_step')
 	merged = tf.summary.merge_all()
 	sess = tf.InteractiveSession()
 
@@ -113,7 +114,8 @@ def main():
 			print('Successfully loaded model. Resuming training.')
 		else:
 			print('Could not load checkpoints.  Training a new model')
-
+	global_step = global_step_tensor.eval()
+	gs_assign_op = global_step_tensor.assign(global_step)
 	for i in range(args.epochs):
 		batch_no = 0
 		while batch_no * args.batch_size + args.batch_size < \
@@ -161,7 +163,7 @@ def main():
 			_, summary, g_loss, gen, g1, g2 = sess.run([g_optim, merged,
                    loss['g_loss'], outputs['generator'], checks['g_loss_1'],
                    checks['g_loss_2']], feed_dict=feed)
-			summary_writer.add_summary(summary)
+			summary_writer.add_summary(summary, global_step)
 			print("LOSSES\nDiscriminator Loss: {}\nGenerator Loss: {"
                   "}\nBatch Number: {}\nEpoch: {},\nTotal Batches per "
                   "epoch: {}\n".format( d_loss, g_loss, batch_no, i,
@@ -169,7 +171,8 @@ def main():
 			print("\nG loss-1 [Real/Fake loss for fake images] : {} \n"
 			      "G loss-2 [Aux Classifier loss for fake images]: {} \n"
 			      " ".format(g1, g2))
-
+			global_step += 1
+			sess.run(gs_assign_op)
 			batch_no += 1
 			if (batch_no % args.save_every) == 0 and batch_no != 0:
 				print("Saving Images and the Model\n\n")
