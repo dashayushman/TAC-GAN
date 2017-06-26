@@ -23,11 +23,11 @@ The following is the architecture of the TAC-GAN model
 height="700" width="400" style="float:center">
 
 # Prerequisites
-
-1. Python 2.7.6
-2. [Tensorflow 0.12.1](https://github.com/tensorflow/tensorflow)
-3. [h5py 2.6.0](http://www.h5py.org/)
-4. [Theano 0.8.2](https://github.com/Theano/Theano) : for skip thought vectors
+Some important dependencies are the following and the rest can be installed 
+using the ```requirements.txt```
+1. Python 3.5
+2. [Tensorflow 1.2.0](https://github.com/tensorflow/tensorflow)
+4. [Theano 0.9.0](https://github.com/Theano/Theano) : for skip thought vectors
 5. [scikit-learn](http://scikit-learn.org/stable/index.html) : for skip thought vectors
 6. [NLTK 3.2.1](http://www.nltk.org/) : for skip thought vectors
 
@@ -57,13 +57,7 @@ doing the following,
 1. **Download the flower images** from
 [here](http://www.robots.ox.ac.uk/~vgg/data/flowers/102/102flowers.tgz).
 Extract the ```102flowers.tgz``` file and copy the extracted ```jpg``` folder
- to the following directory.
-
-    ```
-    Data
-      |__datasets
-             |___flowers
-    ```
+ to ```Data/datasets/flowers```
 
 2. **Download the captions** from
 [here](https://drive.google.com/file/d/0B0ywwgffWnLLcms2WWJQRFNSWXM/).

@@ -29,6 +29,7 @@ import sys
 import tensorflow as tf
 import numpy as np
 
+from skimage.transform import resize
 from scipy import signal
 from scipy.ndimage.filters import convolve
 
@@ -188,7 +189,7 @@ def MultiScaleSSIM(img1, img2, max_val=255, filter_size=11, filter_sigma=1.5,
             (mssim[levels - 1] ** weights[levels - 1]))
 
 
-def calculate_msssim(img_dir, gen_img_dir, caption_dir):
+def calculate_msssim(img_dir, gen_img_dir, caption_dir, output_dir):
 
     image_files = [f for f in os.listdir(img_dir) if 'jpg' in f]
     image_captions = {}
@@ -247,29 +248,35 @@ def calculate_msssim(img_dir, gen_img_dir, caption_dir):
                         continue
                     image1_path = os.path.join(img_dir, img_list[i])
                     image2_path = os.path.join(img_dir, img_list[j])
-                    with tf.gfile.FastGFile(image1_path) as image_file:
+                    with open(image1_path, 'rb') as image_file:
                         img1_str = image_file.read()
-                    with tf.gfile.FastGFile(image2_path) as image_file:
+                    with open(image2_path, 'rb') as image_file:
                         img2_str = image_file.read()
                     input_img = tf.placeholder(tf.string)
                     decoded_image = tf.expand_dims(
                             tf.image.decode_png(input_img, channels=3), 0)
 
-                    img1 = sess.run(decoded_image,
-                                    feed_dict={input_img: img1_str})
-                    img2 = sess.run(decoded_image,
-                                    feed_dict={input_img: img2_str})
+                    img1 = np.squeeze(sess.run(decoded_image,
+                                    feed_dict={input_img: img1_str}))
+                    img2 = np.squeeze(sess.run(decoded_image,
+                                    feed_dict={input_img: img2_str}))
+                    img1 = resize(img1, (128, 128, 3), mode='reflect')
+                    img2 = resize(img2, (128, 128, 3), mode='reflect')
+
+                    img1 = np.expand_dims(img1, axis=0)
+                    img2 = np.expand_dims(img2, axis=0)
+
                     real_msssim.append(MultiScaleSSIM(img1, img2, max_val=255))
 
             for i in range(0, len(gen_img_list)):
                 for j in range(i, len(gen_img_list)):
                     if (i == j):
                         continue
-                    image1_path = os.path.join(img_dir, gen_img_list[i])
-                    image2_path = os.path.join(img_dir, gen_img_list[j])
-                    with tf.gfile.FastGFile(image1_path) as image_file:
+                    image1_path = os.path.join('', gen_img_list[i])
+                    image2_path = os.path.join('', gen_img_list[j])
+                    with open(image1_path, 'rb') as image_file:
                         img1_str = image_file.read()
-                    with tf.gfile.FastGFile(image2_path) as image_file:
+                    with open(image2_path, 'rb') as image_file:
                         img2_str = image_file.read()
                     input_img = tf.placeholder(tf.string)
                     decoded_image = tf.expand_dims(
@@ -283,7 +290,16 @@ def calculate_msssim(img_dir, gen_img_dir, caption_dir):
 
             mean_real_msssim = np.mean(real_msssim)
             mean_fake_msssim = np.mean(fake_msssim)
-            with open('msssim.tsv', 'a') as f:
+
+            tsv_dir = os.path.join(output_dir, 'msssim')
+            tsv_path = os.path.join(tsv_dir, 'msssim.tsv')
+            if not os.path.exists(tsv_dir):
+                os.makedirs(tsv_dir)
+
+            if os.path.exists(tsv_path):
+                os.remove(tsv_path)
+
+            with open(tsv_path, 'a') as f:
                 str_real_mean = "%.9f" % mean_real_msssim
                 str_fake_mean = "%.9f" % mean_fake_msssim
                 f.write(
@@ -294,7 +310,7 @@ def calculate_msssim(img_dir, gen_img_dir, caption_dir):
 if __name__ == '__main__':
     parser = argparse.ArgumentParser()
 
-    parser.add_argument('--output_dir', type=str, default="Data/inception_ds",
+    parser.add_argument('--output_dir', type=str, default="Data/ms-ssim",
                         help='directory to dump all the images for '
                              'calculating inception score')
 
@@ -308,15 +324,14 @@ if __name__ == '__main__':
                         help='The root directory of the synthetic dataset')
 
     args = parser.parse_args()
-    tf.app.run()
 
     if args.dataset != 'flowers':
         print('Dataset Not Found')
         sys.exit()
 
-    img_dir = os.path.join(args.data_dir, args.dataset, 'jpg')
+    img_dir = os.path.join(args.data_dir, 'datasets', args.dataset, 'jpg')
     gen_img_dir = args.syn_dataset_dir
-    caption_dir = os.path.join(args.data_dir, args.dataset, 'flowers',
+    caption_dir = os.path.join(args.data_dir, 'datasets', 'flowers',
                                'text_c10')
 
-    calculate_msssim(img_dir, gen_img_dir, caption_dir)
+    calculate_msssim(img_dir, gen_img_dir, caption_dir, args.output_dir)
