@@ -127,7 +127,7 @@ python train.py --t_dim=100 --image_size=128 --data_set=flowers --model_name=TAC
 
 ## 5. Monitoring
 
-While training, you can monitor the updates on the *terminal* as well as using [*tensorboard*](https://www.tensorflow.org/get_started/summaries_and_tensorboard)
+While training, you can monitor the updates on the *terminal* as well as by using [*tensorboard*](https://www.tensorflow.org/get_started/summaries_and_tensorboard)
 
 ### 5.1 The Terminal:
 ![Terminal log](https://chalelele.files.wordpress.com/2017/06/terminal_log.png)
@@ -139,6 +139,8 @@ You can use the following script to start tensorboard and visualize realtime cha
 ```
 tensorboard --logdir=Data/training/TAC_GAN/summaries
 ```
+
+![Tensorboard](https://chalelele.files.wordpress.com/2017/06/tb.png)
 
 # 2. Generating Images for text in the dataset
 

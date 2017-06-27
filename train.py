@@ -164,7 +164,7 @@ def main():
                    loss['g_loss'], outputs['generator'], checks['g_loss_1'],
                    checks['g_loss_2']], feed_dict=feed)
 			summary_writer.add_summary(summary, global_step)
-			print("LOSSES\nDiscriminator Loss: {}\nGenerator Loss: {"
+			print("\n\nLOSSES\nDiscriminator Loss: {}\nGenerator Loss: {"
                   "}\nBatch Number: {}\nEpoch: {},\nTotal Batches per "
                   "epoch: {}\n".format( d_loss, g_loss, batch_no, i,
                     int(len(loaded_data['image_list']) / args.batch_size)))
