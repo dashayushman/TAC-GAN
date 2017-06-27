@@ -281,7 +281,7 @@ class GAN :
 		                               reuse=reuse,
 		                               is_training = t_training,
 		                               scope = 'd_bn3'))  # 8
-
+		h3_shape = h3.get_shape().as_list()
 		# ADD TEXT EMBEDDING TO THE NETWORK
 		reduced_text_embeddings = ops.lrelu(ops.linear(t_text_embedding,
 		                                               self.options['t_dim'],
@@ -289,7 +289,7 @@ class GAN :
 		reduced_text_embeddings = tf.expand_dims(reduced_text_embeddings, 1)
 		reduced_text_embeddings = tf.expand_dims(reduced_text_embeddings, 2)
 		tiled_embeddings = tf.tile(reduced_text_embeddings,
-		                           [1, 8, 8, 1],
+		                           [1, h3_shape[1], h3_shape[1], 1],
 		                           name = 'tiled_embeddings')
 
 		h3_concat = tf.concat([h3, tiled_embeddings], 3, name = 'h3_concat')

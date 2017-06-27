@@ -46,9 +46,6 @@ def main():
 	parser.add_argument('--beta1', type=float, default=0.5,
 						help='Momentum for Adam Update')
 
-	parser.add_argument('--epochs', type=int, default=200,
-						help='Max number of epochs')
-
 	parser.add_argument('--images_per_caption', type=int, default=30,
 						help='The number of images that you want to generate '
 	                         'per text description')

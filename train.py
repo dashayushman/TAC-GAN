@@ -60,7 +60,7 @@ def main():
 	parser.add_argument('--data_set', type=str, default="flowers",
 						help='Dat set: MS-COCO, flowers')
 
-	parser.add_argument('--model_name', type=str, default="model_1",
+	parser.add_argument('--model_name', type=str, default="TAC_GAN",
 						help='model_1 or model_2')
 
 	parser.add_argument('--train', type = bool, default = True,
