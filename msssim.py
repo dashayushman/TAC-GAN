@@ -23,7 +23,6 @@ python msssim.py --original_image=original.png --compared_image=distorted.png
 """
 import os
 import argparse
-import progressbar
 import sys
 
 import tensorflow as tf

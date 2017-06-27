@@ -56,14 +56,15 @@ def load_images(o_dir, i_dir, n_images=3000, size=128):
 if __name__ == '__main__':
 	parser = argparse.ArgumentParser()
 
-	parser.add_argument('--output_dir', type=str, default="Data/inception_ds",
+	parser.add_argument('--output_dir', type=str, default="Data/ds_inception",
 						help='directory to dump all the images for '
-							 'calculating inception score')
+							 'calculating the inception score')
 
-	parser.add_argument('--data_dir', type=str, default="Data",
+	parser.add_argument('--data_dir', type=str,
+						default="Data/synthetic_dataset/ds",
 						help='The root directory of the synthetic dataset')
 
-	parser.add_argument('--n_images', type=int, default=3000,
+	parser.add_argument('--n_images', type=int, default=30000,
 						help='Number of images to consider for calculating '
 							 'inception score')
 
