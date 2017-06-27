@@ -38,16 +38,16 @@ installing the required dependencies in it by using the
 The project has been tested on a Ubuntu 14.04 machine with an 12 GB NVIDIA
 Titen X GPU
 
-# Setup and Run
+# 1. Setup and Run
 
-## 1. Clone the Repository
+## 1.1. Clone the Repository
 
 ```
 git clone https://github.com/dashayushman/TAC-GAN.git
 cd TAC-GAN
 ```
 
-## 2. Download the Dataset
+## 1.2. Download the Dataset
 
 The model presented in the paper was trained on the
 [flowers dataset](http://www.robots.ox.ac.uk/~vgg/data/flowers/102/ ). This
@@ -71,7 +71,7 @@ the downloaded files to ```Data/skipthoughts```
 **NB:** *It is recommended to keep all the images in an SSD if available. This
  makes the batch loading and processing operation faster.*
 
-## 3. Data Preprocessing
+## 1.3. Data Preprocessing
 Extract the skip-thought features for the captions and prepare the dataset
 for training by running the following script
 
@@ -87,7 +87,7 @@ FLAG | VALUE TYPE | DEFAULT VALUE | DESCRIPTION
 data_dir | str | Data | The data directory |
 dataset | str | flowers | Dataset to use. For Eg., "flowers" |
 
-## 4. Training
+## 1.4. Training
 
 To train TAC-GAN with the default hyper parameters run the following script
 
@@ -125,14 +125,14 @@ We used the following script (hyper-parameters) in our paper
 python train.py --t_dim=100 --image_size=128 --data_set=flowers --model_name=TAC_GAN --train=True --resume_model=True --z_dim=100 --n_classes=102 --epochs=400 --save_every=20 --caption_vector_length=4800 --batch_size=128
 ```
 
-## 5. Monitoring
+## 1.5. Monitoring
 
 While training, you can monitor the updates on the *terminal* as well as by using [*tensorboard*](https://www.tensorflow.org/get_started/summaries_and_tensorboard)
 
-### 5.1 The Terminal:
+### 1.5.1 The Terminal:
 ![Terminal log](https://chalelele.files.wordpress.com/2017/06/terminal_log.png)
 
-### 5.1 Tensorboard:
+### 1.5.1 Tensorboard:
 
 You can use the following script to start tensorboard and visualize realtime changes:
 
@@ -269,6 +269,56 @@ python utility/plot_msssim.py --input_file=Data/msssim.tsv --output_file=Data/ms
 
 This will create ```Data/msssim.pdf```, which is the ***.pdf*** file of the generated figure.
 
+# 5. Generate Interpolated Images
+
+In our paper we show the effect of interpolating the noise and the text embedding vectors on the generated image. Images are randomply selected and their text descriptions are used to generate synthetic images. The following sub-sections will elaborate on how to do it and which scripts will help you in doing it.
+
+## 5.1 Z (Noise) Interpolation
+
+For interpolating the noise vector and generating images, use the following scripts
+
+```
+python z_interpolation.py --output_dir=Data/synthetic_dataset --data_set=flowers --checkpoints_dir=Data/training/TAC_GAN/checkpoints --n_images=500
+```
+
+This will generate the interpolated images in ```Data/synthetic_dataset/z_interpolation/```.
+
+## 5.1 T (Text Embedding) Interpolation
+
+For interpolating the text embedding vectors and generating images, use the following scripts
+
+```
+python t_interpolation.py --output_dir=Data/synthetic_dataset --data_set=flowers --checkpoints_dir=Data/training/TAC_GAN/checkpoints --n_images=500
+```
+
+This will generate the interpolated images in ```Data/synthetic_dataset/t_interpolation/```.
+
+***NOTE:*** Both the above mentioned scripts have the same flags/arguments, which are the following,
+
+FLAG | VALUE TYPE | DEFAULT VALUE | DESCRIPTION
+--- | --- | --- | ---
+z-dim | int | 100 | Number of dimensions of the Noise vector |
+t_dim | int | 512 | Number of dimensions for the latent representation of the text embedding.
+batch_size | int | 64 | Mini-Batch Size
+image_size | int | 128 | Batch size to use during training.
+gf_dim | int | 64 | Number of conv filters in the first layer of the generator.
+df_dim | int | 64 | Number of conv filters in the first layer of the discriminator.
+caption_vector_length | int | 4800 | Length of the caption vector embedding (vector generated using skip-thought vectors model).
+n_classes | int | 102 | Number of classes
+data_dir | String | Data | Data directory
+learning_rate | float | 0.0002 | Learning rate
+beta1 | float | 0.5 | Momentum for Adam Update
+data_set | str | flowers | The dataset to use: "flowers"
+output_dir | String | Data/synthetic_dataset | The directory in which the t_interpolated images will be generated
+checkpoints_dir | String | /tmp | Path to the checkpoints directory which will be used to generate the images
+n_interp | int | 100 | The factor difference between each interpolation (Should ideally be a multiple of 10)
+n_images | int | 500 | Number of images to randomply sample for generating interpolation results
+
+# 6. References
+
+### TAC-GAN
+
+If you find this code usefull, then please use the following BibTex to cite our work.
 
 ```
 @article{dash2017tac,
@@ -279,6 +329,9 @@ This will create ```Data/msssim.pdf```, which is the ***.pdf*** file of the gene
 }
 ```
 
+### Oxford-102 Flowers Dataset
+
+If you use the Oxford-102 Flowers Dataset, then please cite their work using the following BibTex.
 
 ```
 @InProceedings{Nilsback08,
@@ -290,6 +343,9 @@ This will create ```Data/msssim.pdf```, which is the ***.pdf*** file of the gene
 }
 ```
 
+### Skip-Thought
+
+If you use the Skip-Thought model in your work like us, then please cite their work using the following BibTex
 
 ```
 @article{kiros2015skip,
@@ -299,3 +355,7 @@ This will create ```Data/msssim.pdf```, which is the ***.pdf*** file of the gene
   year={2015}
 }
 ```
+
+### Code
+
+We have referred to the [text-to-image](https://github.com/paarthneekhara/text-to-image) and [DCGAN-tensorflow](https://github.com/carpedm20/DCGAN-tensorflow) repositories for developing our code, and we are extremely thankful to them.

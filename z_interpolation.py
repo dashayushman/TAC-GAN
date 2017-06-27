@@ -46,16 +46,13 @@ def main():
     parser.add_argument('--beta1', type=float, default=0.5,
                         help='Momentum for Adam Update')
 
-    parser.add_argument('--epochs', type=int, default=200,
-                        help='Max number of epochs')
-
     parser.add_argument('--data_set', type=str, default="flowers",
                         help='Dat set: flowers')
 
-    parser.add_argument('--output_dir', type=str, default="Data/ds",
+    parser.add_argument('--output_dir', type=str,
+                        default="Data/synthetic_dataset",
                         help='The directory in which this dataset will be '
                              'created')
-
 
     parser.add_argument('--checkpoints_dir', type=str, default="/tmp",
                         help='Path to the checkpoints directory')
