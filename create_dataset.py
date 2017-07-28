@@ -15,7 +15,7 @@ def main():
 	parser.add_argument('--z_dim', type=int, default=100,
 	                    help='Noise dimension')
 
-	parser.add_argument('--t_dim', type=int, default=512,
+	parser.add_argument('--t_dim', type=int, default=256,
 	                    help='Text feature dimension')
 
 	parser.add_argument('--batch_size', type=int, default=64,

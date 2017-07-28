@@ -102,7 +102,7 @@ The following flags can be set to change the hyperparameters of the network.
 FLAG | VALUE TYPE | DEFAULT VALUE | DESCRIPTION
 --- | --- | --- | ---
 z-dim | int | 100 | Number of dimensions of the Noise vector |
-t_dim | int | 512 | Number of dimensions for the latent representation of the text embedding.
+t_dim | int | 256 | Number of dimensions for the latent representation of the text embedding.
 batch_size | int | 64 | Mini-Batch Size
 image_size | int | 128 | Batch size to use during training.
 gf_dim | int | 64 | Number of conv filters in the first layer of the generator.
@@ -194,7 +194,7 @@ This script will create a pickle file called ```Data/enc_text.pkl``` with featur
 To generate images for the text descriptions, run the following script,
 
 ```
-python generate_images.py --dataset=flowers --output_dir=Data/synthetic_dataset --checkpoints_dir=Data/training/TAC_GAN/checkpoints --images_per_caption=30 --data_dir=Data
+python generate_images.py --data_set=flowers --checkpoints_dir=Data/training/TAC_GAN/checkpoints --images_per_caption=30 --data_dir=Data
 ```
 
 This will create a directory  ```Data/images_generated_from_text/``` with a folder corresponding to every row of the ***text.txt*** file. Each of these folders will contain images for that text.
@@ -204,7 +204,7 @@ The following are the parameters you need to set, in case you have used differen
 FLAG | VALUE TYPE | DEFAULT VALUE | DESCRIPTION
 --- | --- | --- | ---
 z-dim | int | 100 | Number of dimensions of the Noise vector |
-t_dim | int | 512 | Number of dimensions for the latent representation of the text embedding.
+t_dim | int | 256 | Number of dimensions for the latent representation of the text embedding.
 batch_size | int | 64 | Mini-Batch Size
 image_size | int | 128 | Batch size to use during training.
 gf_dim | int | 64 | Number of conv filters in the first layer of the generator.
@@ -298,7 +298,7 @@ This will generate the interpolated images in ```Data/synthetic_dataset/t_interp
 FLAG | VALUE TYPE | DEFAULT VALUE | DESCRIPTION
 --- | --- | --- | ---
 z-dim | int | 100 | Number of dimensions of the Noise vector |
-t_dim | int | 512 | Number of dimensions for the latent representation of the text embedding.
+t_dim | int | 256 | Number of dimensions for the latent representation of the text embedding.
 batch_size | int | 64 | Mini-Batch Size
 image_size | int | 128 | Batch size to use during training.
 gf_dim | int | 64 | Number of conv filters in the first layer of the generator.
